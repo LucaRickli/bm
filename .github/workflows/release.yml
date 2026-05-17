@@ -36,9 +36,10 @@ jobs:
           BIN="bm-$GOOS-$GOARCH"
           [ "$GOOS" = "windows" ] && BIN="$BIN.exe"
           go build -trimpath -ldflags="-s -w" -o "$BIN" .
+          sha256sum "$BIN" > "$BIN.sha256"
           echo "BIN=$BIN" >> "$GITHUB_ENV"
 
       - name: Upload to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "${{ github.event.release.tag_name }}" "$BIN"
+        run: gh release upload "${{ github.event.release.tag_name }}" "$BIN" "$BIN.sha256"
